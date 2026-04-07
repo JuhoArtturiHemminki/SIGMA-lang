@@ -1,0 +1,73 @@
+===========================================================================
+SIGMA-LANG: THE GEOMETRIC COMPUTING MANIFESTO & TECHNICAL ROADMAP
+===========================================================================
+
+PROJECT IDENTITY:
+Sigma is a topological systems language where memory is managed through 
+rotational phase-syncing rather than temporal lifetimes. It treats the 
+Address Space as a Geometric Axis.
+
+CURRENT ARCHITECTURAL MILESTONE: PHASE 1 (STABILIZED)
+---------------------------------------------------------------------------
+- VORTEX KERNEL: Virtual execution of rotational memory gates.
+- SECTOR ISOLATION: 45-degree safety buffers enforced at the kernel level.
+- SIGNATURE ENGINE: Binary integrity via algorithmic Signature ID.
+- AST ENGINE: Symbol, Literal, and Operator association mapping.
+- HOST STATUS: Current logic resides in Rust (.rs), simulating Sigma (.sgm).
+---------------------------------------------------------------------------
+
+PHASE 2: THE TRANSITION FROM HOST (.RS) TO NATIVE (.SGM)
+This is the "Point of Divergence" where the logic shifts from the Rust 
+compiler to the Sigma architecture.
+
+- PHYSICAL AXIS MAPPING: Transforming 'Axis' from a Rust-simulated object 
+  into a hard-coded physical memory origin point (0,0,0). 
+- OFFSET GEOMETRY: Transforming 'link@Angle' pointers into spatial 
+  offsets from the Axis origin. At this point, the Rust-based HashMap 
+  is replaced by raw Geometric Vector addressing.
+- THE .RS TO .SGM HANDOVER: 
+  * Rust (.rs) stops being the "brain" and becomes the "loader".
+  * Logic like 'x = 100' is no longer managed by Rust variables.
+  * Logic is handed over to Sigma's internal memory map (Axis-Topology), 
+    meaning the Sigma code (.sgm) starts controlling the hardware directly.
+
+PHASE 3: TORQUE CALCULUS & ALU EXECUTION
+- EXPRESSION FOLDING: Building the High-Torque Math Engine. This will 
+  collapse complex algebraic expressions into a single rotation cycle.
+- REGISTER VORTEX: Mapping AST nodes directly to CPU registers (RAX, 
+  RBX, etc.) based on their Phase Angle. 
+- BYPASSING RUST: At this stage, all computation occurs inside Sigma's 
+  Phase blocks. Rust's role is strictly limited to initial file I/O.
+
+PHASE 4: VORTEX RUNTIME (VR) DEEPENING
+- THREAD ROTATION: Developing the Multi-Core Phase Scheduler. Threads 
+  are assigned angular sectors (e.g., Core 1: 0-90, Core 2: 180-270).
+- COLLISION RESOLUTION: Real-time hardware interrupts (SIGSEGV) if a 
+  thread attempts to rotate into an occupied sector.
+- THE .SGM DOMINANCE: The Sigma environment is now a full-scale 
+  computational engine where memory safety is a geometric fact, not 
+  a compiler-checked borrow.
+
+PHASE 5: GEOMETRIC INTERFACE (GIO)
+- AXIS I/O: Treating external peripherals (GPU, Network, Storage) as 
+  external Axes. Communicating with them via Phase-Syncing.
+- VORTEX VISUALIZER: A real-time terminal-based graphical monitor 
+  displaying every active Axis, its current Angle, and Torque load.
+
+PHASE 6: FINAL STABILIZATION & THE TORQUE-HIGH OPTIMIZER
+- SECTOR COMPACTION: Automated geometric optimization to reduce the 
+  angular gap between Phases without causing Collisions.
+- ZERO-OVERHEAD ABSTRACTION: Ensuring all Sigma-specific constructs 
+  evaporate into raw machine instructions. The program's execution 
+  state is a perfect geometric circle.
+
+---------------------------------------------------------------------------
+NEXT SESSION STARTUP PROCEDURE:
+1. Load Workspace: cd ~/Desktop/SIGMA-lang
+2. Execute Stabilizer: cargo run
+3. Verify Harmonic Sync: Ensure all 8 .sgm files pass [DONE] status.
+4. Target: Handover of logic from Rust-simulated memory to Physical Axis 
+   Mapping (PHASE 2 Initialization).
+---------------------------------------------------------------------------
+"Sigma: Complexity resolved through geometry."
+===========================================================================
