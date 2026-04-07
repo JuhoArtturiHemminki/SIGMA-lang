@@ -1,0 +1,153 @@
+SIGMA LANGUAGE SPECIFICATION: THE GEOMETRIC SYNTAX
+
+Sigma is a high-performance systems language designed to replace linear lifetime models with Rotational Phase-Syncing. This document outlines the complete syntax, type system, and structural rules of the Sigma language.
+
+1. PRIMITIVE CONSTRUCTS
+The SigmaAxis (The Root)
+In Sigma, data does not float; it is anchored. The axis is the only way to allocate managed, stationary memory.
+sigma
+
+// Syntax: axis <Type> { <Fields> }
+let root = axis Node { 
+    value: 1024, 
+    next: null 
+};
+
+Technical Detail: An Axis is a stationary root. Once declared, its physical memory address is invariant. This allows the compiler to treat the Axis as a geometric origin point (0,0,0) in the memory map.
+The Phase (@Angle)
+A Phase is a capability that grants access to an Axis at a specific angular offset.
+sigma
+
+// Syntax: Phase<Type, Angle>
+let p90: Phase<Node, 90> = root.initialize_at::<90>();
+
+Technical Detail: Phases are non-copyable types. They represent a unique "slice" of the 360° rotation. A Phase is valid only if its angle does not overlap with an existing mutable Phase on the same Axis.
+2. RECURSIVE DATA STRUCTURES (GEOMETRIC LINKS)
+Sigma solves self-reference by defining links as angular offsets.
+sigma
+
+struct DoublyLinked<T> {
+    data: T,
+    // link@Angle refers to a pointer that is geometrically synchronized
+    // @360 represents a full cycle return to the origin Axis
+    prev: link@360<DoublyLinked<T>>,
+    next: link@0<DoublyLinked<T>>,
+}
+
+Technical Detail: Unlike Rust's &'a T, a link@Angle does not store a temporal lifetime. It stores a spatial invariant. The compiler verifies that the link is only accessible when the system's current Phase aligns with the link's Angle.
+3. THE EXECUTION MODEL: STEPS AND POINTS
+Sigma does not use free-floating references. Access is only granted inside a step block or through a point execution.
+The 'step' Block
+sigma
+
+// Syntax: step@<Angle>(<Axis>) -> <PhaseName> { <body> }
+step@45(root) -> p45 {
+    // Inside this block, p45 has exclusive access to 'root' at 45 degrees.
+    p45.point(|data| {
+        data.value += 1;
+    });
+} 
+// At the end of the block, the 45° phase is released.
+
+The 'point' (.) Operator
+The point operator (represented by the .point method) is the atomic moment of data mutation. It synchronizes the hardware memory barrier with the geometric phase.
+4. TORQUE SEMANTICS (STATE TRANSITIONS)
+The most critical part of Sigma is how it handles state changes. We use Torque Semantics to "twist" the system from one phase to the next.
+sigma
+
+// Syntax: rotate <OldPhase> to @<NewAngle> -> <NewPhaseName> { <body> }
+let p0 = root.initialize(); // Starts at 0°
+
+rotate p0 to @180 -> p180 {
+    // 'p0' is now DESTROYED at the type level.
+    // Use of 'p0' here triggers a [Vortex Error: Ghost Phase Access].
+    p180.point(|data| data.value *= 2);
+}
+
+Technical Detail: The rotate operation is a move-transformation. It consumes the previous type Phase<T, 0> and produces Phase<T, 180>. This prevents aliasing (having two names for the same mutable data) without needing a complex borrow-checker.
+5. HARMONIC LOOPS (SELF-REFERENCE RESOLUTION)
+Sigma handles cyclic graphs as a natural property of 360° geometry.
+sigma
+
+fn create_cycle(root: Axis<Node>) {
+    // Enter the axis at the full-cycle point
+    step@360(root) -> sync {
+        sync.point(|n| {
+            // A 360-degree link is a pointer to the Axis itself.
+            // This is mathematically sound and requires no 'unsafe'.
+            n.next = link(root); 
+        });
+    }
+}
+
+Technical Detail: In linear logic, a pointer to self is a recursive paradox. In Sigma, it is a Harmonic Loop. Since the Axis is stationary, a 360° phase-link is simply a pointer back to the origin, verified by the fact that the rotation has completed.
+6. PHASE-DISJOINT CONCURRENCY
+Sigma enables lock-free parallelism by ensuring threads occupy different angular sectors.
+sigma
+
+// Thread A occupies the 0-90 degree sector
+spawn {
+    step@45(root) -> pa {
+        pa.point(|d| d.value += 1);
+    }
+}
+
+// Thread B occupies the 180-270 degree sector
+spawn {
+    // Delta is 180°, therefore safety is a geometric guarantee.
+    step@225(root) -> pb {
+        pb.point(|d| d.value += 1);
+    }
+}
+
+Technical Detail: The compiler enforces a Zero-Overlap Invariant. Multiple threads can read/write the same Axis simultaneously if their phase angles are disjoint. This removes the need for Mutexes, Semaphores, or Atomic counters in many high-performance scenarios.
+7. VORTEX COMPILER DIAGNOSTICS
+The Vortex compiler does not provide cryptic lifetime errors. It provides Geometric Violations.
+Example 1: Phase Collision
+text
+
+[Vortex Error]: Phase Collision detected on Axis 'root'
+--> source.sigma:22:10
+
+ |
+22 |    step@90(root) -> phase_a
+23 |    step@90(root) -> phase_b
+
+ |         ^   ^
+ |   ERROR: Angle 90° is already occupied by 'phase_a'.
+ |   GEOMETRY: You cannot occupy the same angular space twice.
+
+Example 2: Ghost Phase Access (Torque Violation)
+text
+
+[Vortex Error]: Ghost Phase Access
+--> source.sigma:45:5
+
+ |
+42 |    rotate p0 to @90 -> p90
+45 |    p0.point(|d| ...)
+
+ |      ^
+ |   ERROR: 'p0' was consumed by Torque rotation to @90.
+ |   LOGIC: The phase at 0° no longer exists in the current rotation.
+
+8. KEYWORDS SUMMARY
+
+    axis: Declares a stationary memory root.
+    step: Opens an angular execution window.
+    rotate: Performs a destructive Torque transition between phases.
+    link: Creates a persistent geometric pointer.
+    sync: Completes a rotation and returns to the zero-point.
+    point: The atomic execution moment.
+    torque: Forces the immediate erasure of a phase state.
+
+9. CONCLUSION: THE SIGMA ADVANTAGE
+Sigma is the first language to treat memory as a Topological Constant.
+
+    10/10 Soundness: Safety is enforced by modular arithmetic.
+    Instant Compilation: No NP-hard inference puzzles.
+    Native Cycles: Self-references are a first-class citizen.
+    Zero-Cost: All geometric logic evaporates at compile time, leaving raw, optimized machine code.
+
+Sigma: Moving beyond the line.
+Authored by the Sigma Collective & Vortex Systems Development Group
