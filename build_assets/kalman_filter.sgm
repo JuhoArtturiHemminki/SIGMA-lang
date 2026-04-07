@@ -1,0 +1,30 @@
+struct KalmanState {
+    mean: f64,      // Current state estimate (e.g., position)
+    variance: f64,  // Estimation uncertainty
+}
+
+fn update_kalman(root: Axis<KalmanState>, measurement: f64, sensor_variance: f64) {
+    // 1. Initial State: Start at the origin phase (0°)
+    let p_predict = root.initialize_at::<0>();
+
+    // 2. Torque Transition: Twist the prediction phase into the update phase (180°)
+    // This consumes the 'p_predict' type to prevent stale data access.
+    rotate p_predict to @180 -> p_update {
+        
+        // The .point operator creates the atomic moment of mutation
+        p_update.point(|state| {
+            // Calculate the Kalman Gain (simplified 1D version)
+            let gain = state.variance / (state.variance + sensor_variance);
+            
+            // Perform the state update at the geometric point
+            state.mean = state.mean + gain * (measurement - state.mean);
+            state.variance = (1.0 - gain) * state.variance;
+        });
+    }
+
+    // 3. Harmonic Loop: Return the rotation to 360° to complete the cycle
+    // This stabilizes the Axis for the next iteration.
+    rotate p_update to @360 -> p_final {
+        sync(p_final); 
+    }
+}
