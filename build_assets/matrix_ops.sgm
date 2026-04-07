@@ -1,0 +1,51 @@
+struct Matrix {
+    data: [f64; 16],
+    rows: u32,
+    cols: u32
+}
+
+fn mat_mul(a: Axis<Matrix>, b: Axis<Matrix>, out: Axis<Matrix>) {
+    step@0(a) -> pa {
+        step@90(b) -> pb {
+            step@180(out) -> po {
+                po.point(|target| {
+                    let mut i = 0;
+                    while i < 4 {
+                        let mut j = 0;
+                        while j < 4 {
+                            let mut sum = 0.0;
+                            let mut k = 0;
+                            while k < 4 {
+                                sum += pa.data[i * 4 + k] * pb.data[k * 4 
++ j];
+                                k += 1;
+                            }
+                            target.data[i * 4 + j] = sum;
+                            j += 1;
+                        }
+                        i += 1;
+                    }
+                });
+            }
+        }
+    }
+}
+
+fn transpose_in_place(root: Axis<Matrix>) {
+    rotate root.initialize_at::<0>() to @180 -> p_trans {
+        p_trans.point(|m| {
+            let mut i = 0;
+            while i < 4 {
+                let mut j = i + 1;
+                while j < 4 {
+                    let temp = m.data[i * 4 + j];
+                    m.data[i * 4 + j] = m.data[j * 4 + i];
+                    m.data[j * 4 + i] = temp;
+                    j += 1;
+                }
+                i += 1;
+            }
+        });
+    }
+}
+
