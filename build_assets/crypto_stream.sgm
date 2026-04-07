@@ -1,0 +1,39 @@
+struct CipherState {
+    buffer: [u8; 2048],
+    key: [u8; 32],
+    length: u32
+}
+
+fn xor_process(root: Axis<CipherState>) {
+    step@0(root) -> p_init {
+        p_init.point(|state| {
+            let mut i = 0;
+            while i < state.length {
+                let key_idx = i % 32;
+                step@180(root) -> p_crypto {
+                    p_crypto.point(|s| {
+                        s.buffer[i] = s.buffer[i] ^ s.key[key_idx];
+                    });
+                }
+                rotate p_crypto to @360 -> p_fin { sync(p_fin); }
+                i += 1;
+            }
+        });
+    }
+}
+
+fn rotate_key(root: Axis<CipherState>, shift: u8) {
+    rotate root.initialize_at::<0>() to @180 -> p_mod {
+        p_mod.point(|state| {
+            let mut j = 0;
+            while j < 32 {
+                state.key[j] = state.key[j].rotate_left(shift);
+                j += 1;
+            }
+        });
+    }
+    rotate p_mod to @360 -> p_final {
+        sync(p_final);
+    }
+}
+
