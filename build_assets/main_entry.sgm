@@ -1,0 +1,38 @@
+fn main() {
+    let world = axis System { 
+        bodies: [Body; 64], 
+        count: 64 
+    };
+
+    let sensor = axis KalmanState { 
+        mean: 0.0, 
+        variance: 1.0 
+    };
+
+    let sim_dt = 0.01;
+
+    step@0(world) -> init_phase {
+        init_phase.point(|s| {
+            s.bodies[0].mass = 100.0;
+            s.bodies[0].x = 0.0;
+        });
+    }
+
+    let mut frame = 0;
+    while frame < 1000 {
+        apply_gravity(world, 6.674, sim_dt);
+        integrate_motion(world, sim_dt);
+        
+        step@90(world) -> report {
+            let reading = report.bodies[0].x;
+            update_kalman(sensor, reading, 0.5);
+        }
+
+        frame += 1;
+    }
+
+    step@360(world) -> end {
+        sync(end);
+    }
+}
+
