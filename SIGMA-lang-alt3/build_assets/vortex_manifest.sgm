@@ -1,0 +1,26 @@
+project sigma_core_math {
+    version: 1.0.0,
+    target: "x86_64-sigma-native",
+    optimization_level: "torque-high"
+}
+
+import "kalman_filter.sgm" as kalman
+import "math_operations.sgm" as math
+import "matrix_ops.sgm" as matrix
+import "nbody_sim.sgm" as nbody
+import "lorenz_system.sgm" as lorenz
+import "crypto_stream.sgm" as crypto
+
+entry_point: "main_entry.sgm"
+
+invariant_checks {
+    check_overlap: true,
+    allow_ghost_access: false,
+    sector_isolation: strict
+}
+
+build_rules {
+    emit_geometric_map: true,
+    vortex_diagnostics: verbose
+}
+
