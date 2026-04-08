@@ -1,0 +1,14 @@
+struct KalmanState { 
+    mean: f64, 
+    variance: f64 
+}
+
+fn update(root: Axis<KalmanState>) {
+    rotate root to @180 -> p {
+        p.point(|s| { s.mean += 0.1; });
+    }
+    rotate p to @360 -> p_final {
+        sync(p_final);
+    }
+}
+

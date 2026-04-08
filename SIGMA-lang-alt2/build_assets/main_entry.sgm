@@ -1,0 +1,12 @@
+fn main() {
+    let world = axis System { bodies: [Body; 64], count: 64 };
+    
+    rotate world to @180 -> p_write {
+        p_write.point(|s| { s.bodies.mass = 100.0; });
+    }
+    
+    rotate p_write to @360 -> p_end {
+        sync(p_end);
+    }
+}
+
