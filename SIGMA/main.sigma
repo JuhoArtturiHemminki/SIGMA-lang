@@ -1,0 +1,15 @@
+# FINAL SIGMA PRODUCTION CODE
+axis int32 SystemStatus @ 0deg : r0;
+axis float32 GlobalTorque @ 90deg : r1;
+
+# Define a safe NTI resonance node
+nti_node Security_Watchdog @ 180deg weight 0.95;
+
+fn initialize_vortex() {
+    step@0(SystemStatus) -> status { status.point(|val| val = 1); }
+    step@90(GlobalTorque) -> torque { torque.point(|val| val = 100.0); }
+}
+
+spiral (axis i = 0; i < 20; i++) {
+    sync initialize_vortex();
+}

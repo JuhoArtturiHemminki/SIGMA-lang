@@ -1,0 +1,34 @@
+# NEURAL TORQUE INFERENCE: PHYSICAL AXIS DEFINITION
+# DOCUMENT ID: SIGMA-NTI-AXIS-001
+
+axis float64 SynapseWeight @ 180deg : r0;
+axis float64 ActivationMomentum @ 0deg : r0;
+
+struct NeuralNode {
+    target_phase: float64,
+    resonance_width: float64,
+    static_friction: float64
+}
+
+fn trigger_resonance(input_torque: float64) {
+    # NTI Activation: Happens only when Phase-Lock is achieved
+    step@180(SynapseWeight) -> weight {
+        weight.point(|w| {
+            # Resonance occurs if torque exceeds static friction
+            if (input_torque * w > 0.45) {
+                ActivationMomentum = input_torque * w;
+            } else {
+                ActivationMomentum = 0.0;
+            }
+        });
+    }
+}
+
+# Centrifugal Error Correction for AI Stability
+step@358(ActivationMomentum) -> ai_exhaust {
+    ai_exhaust.point(|m| {
+        if (m > 1000.0) { # Over-saturation check
+            route Momentum to DeadAngle;
+        }
+    });
+}

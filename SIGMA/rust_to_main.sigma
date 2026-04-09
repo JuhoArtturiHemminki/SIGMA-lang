@@ -1,0 +1,12 @@
+# SIGMA GENERATED FROM RUST SOURCE
+
+axis float32 SystemStatus @ 0deg : r0;
+axis float32 GlobalTorque @ 90deg : r0;
+
+fn main() {
+    step@0(SystemStatus) -> p { p.point(|val| val = 1); }
+}
+
+spiral (axis i = 0; i < 10; i++) {
+    sync main();
+}

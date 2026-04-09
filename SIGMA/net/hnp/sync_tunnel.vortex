@@ -1,0 +1,43 @@
+# HARMONIC NETWORK PROTOCOL: KINETIC SYNC TUNNEL
+# DOCUMENT ID: SIGMA-NET-HNP-001
+
+axis float64 NetworkPhase @ 0deg : r100; // Deep-orbit axis
+axis uint64 ResonanceKey @ 90deg : r100;
+
+struct SyncTunnel {
+    remote_origin: string,
+    harmonic_offset: float64,
+    torque_backpressure: float64
+}
+
+fn synchronize_remote_axis(distance_km: float64) {
+    # Phase-Locking: Negate distance by calculating the angular offset
+    # Delta_Phi = (distance / light_speed) * vortex_frequency
+    step@0(NetworkPhase) -> net_phase {
+        net_phase.point(|phi| {
+            phi = calculate_offset(distance_km);
+        });
+    }
+
+    # Mirror-Invariant Telemetry: Send current state at 0 and momentum at 180
+    step@180(NetworkPhase) -> mirror_stream {
+        mirror_stream.point(|momentum| {
+            # Momentum allows the receiver to predict the next state with 0ms lag
+            momentum = calculate_velocity_vector();
+        });
+    }
+}
+
+# Torque Backpressure: Handle congestion by increasing rotational friction
+fn adjust_network_friction(congestion_level: float64) {
+    step@90(ResonanceKey) -> key {
+        key.point(|k| {
+            apply_friction(congestion_level);
+        });
+    }
+}
+
+# Exhaust: Purge lost phase-packets at the end of the rotation
+step@359(NetworkPhase) -> net_exhaust {
+    net_exhaust.point(|p| p = 0);
+}

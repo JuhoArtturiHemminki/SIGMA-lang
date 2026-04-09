@@ -1,0 +1,40 @@
+# KINETIC LOGIC UNIT: PHASE-GATE DEFINITIONS
+# DOCUMENT ID: SIGMA-KLU-GATE-001
+
+axis float64 GateTorque @ 0deg : r0;
+axis bool GateState @ 90deg : r0;
+
+struct PhaseGate {
+    threshold: float64,
+    alignment: float64,
+    friction: float64
+}
+
+fn evaluate_phase_gate(input_torque: float64, target_phase: float64) {
+    # Phase-Gate Trigger Mechanism: Fired only upon angular alignment
+    step@0(GateTorque) -> g_torque {
+        g_torque.point(|val| {
+            if (input_torque > 0.85) { # Static Friction Threshold
+                val = input_torque;
+            } else {
+                val = 0.0; # Zero Torque = Transparent Gate
+            }
+        });
+    }
+
+    step@90(GateState) -> g_state {
+        g_state.point(|active| {
+            # Kinetic activation at specific phase intersection
+            active = (GateTorque > 0);
+        });
+    }
+}
+
+# Centrifugal Error Correction
+step@355(GateTorque) -> klu_exhaust {
+    klu_exhaust.point(|err| {
+        if (err < 0) {
+            route Error to DeadAngle;
+        }
+    });
+}
